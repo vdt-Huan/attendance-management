@@ -8,6 +8,7 @@
 
 import type {
   AttendanceRecord,
+  AttendanceStatus,
   DailyCheckinPoint,
   DashboardStats,
   DemoNotification,
@@ -82,3 +83,46 @@ export const STATUS_LABEL: Record<AttendanceRecord["status"], string> = {
   "ve-som": "Về sớm",
   vang: "Vắng",
 };
+
+// ---------------------------------------------------------------------
+// DỮ LIỆU DEMO CÁ NHÂN — chỉ phục vụ Tổng quan nhân viên (employee).
+// Tuyệt đối không chứa số liệu toàn công ty (không tổng nhân viên,
+// không lượt chấm công của người khác). Sẽ thay bằng Supabase (bản ghi
+// của chính user đăng nhập) ở prompt nghiệp vụ chấm công thật.
+// ---------------------------------------------------------------------
+
+/** Một ngày chấm công của chính nhân viên (không có mã/tên người khác). */
+export interface PersonalDayRecord {
+  /** Nhãn ngày, ví dụ "Hôm nay", "14/10", "T2 13/10". */
+  dateLabel: string;
+  checkIn: string | null;
+  checkOut: string | null;
+  status: AttendanceStatus;
+}
+
+/** Trạng thái hôm nay của chính nhân viên. */
+export const DEMO_PERSONAL_TODAY: PersonalDayRecord = {
+  dateLabel: "Hôm nay",
+  checkIn: "08:02",
+  checkOut: null,
+  status: "di-muon",
+};
+
+/** Tổng hợp tháng này của chính nhân viên. */
+export const DEMO_PERSONAL_MONTH = {
+  /** Ngày công đã ghi nhận trong tháng. */
+  workDays: 14,
+  /** Số lần đi muộn của chính nhân viên trong tháng. */
+  lateCount: 2,
+  /** Số ngày nghỉ đã duyệt trong tháng (để nhân viên tự đối chiếu). */
+  leaveDays: 1,
+};
+
+/** 5 ngày gần nhất của chính nhân viên (mới nhất trước). */
+export const DEMO_PERSONAL_RECENT: PersonalDayRecord[] = [
+  { dateLabel: "Hôm nay", checkIn: "08:02", checkOut: null, status: "di-muon" },
+  { dateLabel: "Hôm qua", checkIn: "07:52", checkOut: "17:05", status: "dung-gio" },
+  { dateLabel: "2 ngày trước", checkIn: "07:55", checkOut: "17:01", status: "dung-gio" },
+  { dateLabel: "3 ngày trước", checkIn: "08:15", checkOut: "17:00", status: "di-muon" },
+  { dateLabel: "4 ngày trước", checkIn: "07:48", checkOut: "17:10", status: "dung-gio" },
+];

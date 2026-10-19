@@ -1,14 +1,18 @@
 import { APP_NAME } from "../lib/constants";
+import type { UserRole } from "../types/auth";
 import { Icons } from "./icons";
 import { NAV_ITEMS, type PageKey } from "./navigation";
 
 interface SidebarProps {
   active: PageKey;
   collapsed: boolean;
+  role: UserRole;
   onNavigate: (key: PageKey) => void;
 }
 
-function SidebarBody({ active, collapsed, onNavigate }: SidebarProps) {
+function SidebarBody({ active, collapsed, role, onNavigate }: SidebarProps) {
+  // Ẩn menu không được phép — chỉ để gọn giao diện, bảo mật thật ở RLS + guard.
+  const visible = NAV_ITEMS.filter((item) => item.allowedRoles.includes(role));
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-4 py-5">
@@ -23,7 +27,7 @@ function SidebarBody({ active, collapsed, onNavigate }: SidebarProps) {
         )}
       </div>
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4" aria-label="Điều hướng chính">
-        {NAV_ITEMS.map((item) => {
+        {visible.map((item) => {
           const Icon = Icons[item.icon];
           const selected = item.key === active;
           return (
@@ -90,7 +94,7 @@ export function Sidebar(props: SidebarProps & { mobileOpen: boolean; onCloseMobi
             aria-hidden="true"
           />
           <aside className="absolute inset-y-0 left-0 w-72 max-w-[85vw] bg-white shadow-xl">
-            <SidebarBody active={bodyProps.active} collapsed={false} onNavigate={handleNavigate} />
+            <SidebarBody active={bodyProps.active} collapsed={false} role={bodyProps.role} onNavigate={handleNavigate} />
           </aside>
         </div>
       )}

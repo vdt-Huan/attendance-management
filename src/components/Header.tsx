@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDismiss } from "../hooks/useDismiss";
 import { useNow } from "../hooks/useNow";
-import { DEMO_NOTIFICATIONS, DEMO_USER } from "../services/demoData";
+import { DEMO_NOTIFICATIONS } from "../services/demoData";
 import { Icons } from "./icons";
 import { formatDateShortInVietnamTimeZone, formatNowInVietnamTimeZone } from "../lib/timezone";
 
@@ -11,6 +11,12 @@ interface HeaderProps {
   onToggleCollapse: () => void;
   onOpenMobile: () => void;
   notify: (message: string) => void;
+  accountName: string;
+  accountRole: string;
+  accountInitials: string;
+  signingOut: boolean;
+  onOpenProfile: () => void;
+  onSignOut: () => void;
 }
 
 export function Header({
@@ -19,6 +25,12 @@ export function Header({
   onToggleCollapse,
   onOpenMobile,
   notify,
+  accountName,
+  accountRole,
+  accountInitials,
+  signingOut,
+  onOpenProfile,
+  onSignOut,
 }: HeaderProps) {
   const now = useNow();
   const [bellOpen, setBellOpen] = useState(false);
@@ -117,7 +129,7 @@ export function Header({
           )}
         </div>
 
-        {/* Tài khoản demo */}
+        {/* Tài khoản thật (Supabase Auth + profiles) */}
         <div className="relative" ref={menuRef}>
           <button
             type="button"
@@ -127,42 +139,44 @@ export function Header({
             className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-slate-100"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
-              {DEMO_USER.initials}
+              {accountInitials}
             </span>
             <span className="hidden text-left md:block">
-              <span className="block text-sm font-medium leading-tight text-slate-900">
-                {DEMO_USER.name}
+              <span className="block max-w-36 truncate text-sm font-medium leading-tight text-slate-900">
+                {accountName}
               </span>
-              <span className="block text-xs leading-tight text-slate-500">{DEMO_USER.role}</span>
+              <span className="block text-xs leading-tight text-slate-500">{accountRole}</span>
             </span>
             <Icons.chevronDown className="hidden h-4 w-4 text-slate-500 md:block" />
           </button>
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-52 rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
-              <p className="border-b border-slate-100 px-4 py-2 text-xs text-slate-500">
-                Tài khoản demo — chưa đăng nhập thật
+              <p className="truncate border-b border-slate-100 px-4 py-2 text-xs text-slate-500">
+                {accountName}
               </p>
-              {[
-                { icon: "user" as const, label: "Hồ sơ cá nhân" },
-                { icon: "settings" as const, label: "Đổi mật khẩu" },
-                { icon: "logout" as const, label: "Đăng xuất" },
-              ].map((item) => {
-                const ItemIcon = Icons[item.icon];
-                return (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      notify(`“${item.label}” sẽ được triển khai cùng xác thực ở prompt tiếp theo.`);
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
-                  >
-                    <ItemIcon className="h-4 w-4 text-slate-400" />
-                    {item.label}
-                  </button>
-                );
-              })}
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onOpenProfile();
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+              >
+                <Icons.user className="h-4 w-4 text-slate-400" />
+                Hồ sơ cá nhân
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onSignOut();
+                }}
+                disabled={signingOut}
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 disabled:text-slate-300"
+              >
+                <Icons.logout className="h-4 w-4 text-slate-400" />
+                {signingOut ? "Đang đăng xuất…" : "Đăng xuất"}
+              </button>
             </div>
           )}
         </div>

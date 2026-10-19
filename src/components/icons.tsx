@@ -57,6 +57,13 @@ export const Icons = {
       <path d="M16 15.2c2.6.2 4.7 1.7 5.5 4.8" />
     </>,
   ),
+  departments: createIcon(
+    <>
+      <rect x="4" y="3" width="16" height="18" rx="1.5" />
+      <path d="M9 21v-4h6v4" />
+      <path d="M8 7.5h2M14 7.5h2M8 11h2M14 11h2M8 14.5h2M14 14.5h2" />
+    </>,
+  ),
   shifts: createIcon(
     <>
       <rect x="3" y="4" width="18" height="17" rx="2" />
